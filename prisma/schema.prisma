@@ -1,0 +1,99 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String?
+  email    String
+  password String
+
+  role    UserRole
+
+  accomodationFlights UserAccomodationFlight[]
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime?                @updatedAt
+}
+
+model UserAccomodationFlight {
+  id Int @id @default(autoincrement())
+
+  Flight       Flight        @relation(fields: [flightId], references: [id])
+  Accomodation Accommodation @relation(fields: [accommodationId], references: [id])
+  User         User          @relation(fields: [userId], references: [id])
+
+  userId          Int
+  flightId        Int
+  accommodationId Int
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Accommodation {
+  id          Int     @id @default(autoincrement())
+  name        String?
+  description String?
+
+  facilities String[]
+  rating     Int?
+  stars      Int?
+  rooms      Int?
+  surface    Int?
+  price      Int?
+
+  photos String[]
+
+  location   LocationPoint @relation(fields: [locationId], references: [id])
+  locationId Int           @unique
+
+  accomodationFlights UserAccomodationFlight[]
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime?                @updatedAt
+}
+
+model Flight {
+  id                  Int           @id @default(autoincrement())
+  locationStartFlight LocationPoint @relation("startFlightLocation", fields: [startLocationId], references: [id])
+  locationEndFlight   LocationPoint @relation("endFlightLocation", fields: [endLocationId], references: [id])
+
+  startLocationId Int @unique
+  endLocationId   Int @unique
+
+  date DateTime
+
+  twoWay         Boolean @default(false)
+  numberOfpeople Int?
+
+  optionId Int?
+  priece   Int
+
+  accomodationFlights UserAccomodationFlight[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model LocationPoint {
+  id        Int   @id @default(autoincrement())
+  latitude  Float
+  longitude Float
+
+  Accommodation   Accommodation?
+  startFlight     Flight?        @relation("startFlightLocation")
+  endflightFlight Flight?        @relation("endFlightLocation")
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime?      @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  ROOT
+}
