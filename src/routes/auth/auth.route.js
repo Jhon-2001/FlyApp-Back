@@ -81,7 +81,7 @@ authRouter.get("/me", async (req, res) => {
   }
 });
 
-authRouter.post("/register", async (req, res) => {
+authRouter.post("/signup", async (req, res) => {
   const { password, email } = req.body;
 
   try {
