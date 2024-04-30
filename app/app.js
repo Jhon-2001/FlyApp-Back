@@ -6,7 +6,6 @@ const app = express();
 
 // Define a route
 app.get('/', (req, res) => {
-  res.send('Hello World!');
   res.sendFile(parent)
 });
 
