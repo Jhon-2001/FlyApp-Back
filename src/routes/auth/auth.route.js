@@ -9,38 +9,6 @@ dotenv.config();
 
 export const authRouter = express.Router();
 
-authRouter.post("/login", async (req, res) => {
-  try {
-    const reqBody = await req.body;
-    const { email, password } = reqBody;
-
-    const user = await prisma.user.findFirst({
-      where: {
-        email: email,
-      },
-    });
-    if (!user) {
-      return res.status(400).json({ error: "email incorrect" });
-    }
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(400).json({ error: "parola incorrecta" });
-    }
-
-    const tokenData = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    };
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET || '', {
-      expiresIn: "1d",
-    });
-    return res.status(200).json({ token: token, user: user });
-  } catch (error) {
-    return res.status(500).json(error.message || error || "Eroare pe server");
-  }
-});
-
 authRouter.get("/me", async (req, res) => {
   try {
     const bearerHeader = req.headers["authorization"];
