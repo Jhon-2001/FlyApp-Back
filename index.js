@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 
 app.use("/auth" , authRouter)
 
-
+// @@@ROUTES@@@
 
 
 app.listen(port, () => {
