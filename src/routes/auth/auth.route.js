@@ -77,3 +77,30 @@ authRouter.post("/signup", async (req, res) => {
   }
 });
 
+authRouter.post("/signin", async (req, res) => {
+  const { password, email } = req.body;
+
+  try {
+    const emailCheck = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+    if (!emailCheck) {
+      return res.status(401).json({ error: "Email or password incorrect" });
+    }
+    else {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+        },
+      });
+      return res.status(200).json(user);
+    }
+    
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+});
