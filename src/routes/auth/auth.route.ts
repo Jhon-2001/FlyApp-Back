@@ -44,6 +44,7 @@ authRouter.get('/me', async (req:Request, res:Response) => {
 });
 
 authRouter.post('/signup', async (req:Request, res:Response) => {
+  console.log("req.cookies",req.headers)
   const { password, email ,name} = req.body;
 
   try {
