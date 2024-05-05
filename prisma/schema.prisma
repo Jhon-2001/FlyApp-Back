@@ -65,13 +65,18 @@ model Flight {
   startLocationId Int @unique
   endLocationId   Int @unique
 
+  company String?
+  companyLogo String?
+
   date DateTime
 
-  twoWay         Boolean @default(false)
-  numberOfpeople Int?
+
+
+  twoWay         Boolean? @default(false)
+  numberOfPeople Int?
 
   optionId Int?
-  priece   Int
+  price   Int
 
   accomodationFlights UserAccomodationFlight[]
 
@@ -83,6 +88,8 @@ model LocationPoint {
   id        Int   @id @default(autoincrement())
   latitude  Float
   longitude Float
+  city String?
+  airport String?
 
   Accommodation   Accommodation?
   startFlight     Flight?        @relation("startFlightLocation")

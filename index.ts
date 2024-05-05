@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import checkDbConnection from './utils/db';
 import { authRouter } from './src/routes/auth/auth.route';
+import { flyghtRouter } from './src/routes/flight/flight.route';
+import { locationRouter } from './src/routes/location/location.route';
+import { accomodationRouter } from './src/routes/accomodation/accomodation.route';
 
 dotenv.config();
 
@@ -24,6 +27,10 @@ app.use(
 // @@@ROUTES@@@
 
 app.use('/auth', authRouter);
+app.use('/flight', flyghtRouter);
+app.use('/location', locationRouter);
+app.use('/accomodation', accomodationRouter);
+
 
 // @@@ROUTES@@@
 
