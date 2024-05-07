@@ -6,7 +6,8 @@ export interface Flight {
     endLocationId: number;
     company?: string;
     companyLogo?: string;
-    date: Date;
+    startDate: Date;
+    endDate:Date;
     twoWay?: boolean;
     numberOfPeople?: number;
     optionId?: number;

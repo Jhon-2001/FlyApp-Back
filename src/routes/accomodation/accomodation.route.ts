@@ -35,7 +35,7 @@ accomodationRouter.post('/', async (req, res, next) => {
     });
     res.json(newAccommodation);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json(error)
   }
 });
 
@@ -55,7 +55,9 @@ accomodationRouter.get('/:id', async (req, res, next) => {
 });
 accomodationRouter.get('/', async (req, res, next) => {
   try {
-    const accommodation = await prisma.accommodation.findMany({});
+    const accommodation = await prisma.accommodation.findMany({
+    
+    });
     res.json(accommodation);
   } catch (error) {
     next(error);
