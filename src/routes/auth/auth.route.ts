@@ -4,48 +4,42 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { User } from '../../../types/user.js';
-
+import { extractAccessToken } from '../../../utils/extractToken';
 dotenv.config();
 
 export const authRouter = express.Router();
 
-authRouter.get('/me', async (req:Request, res:Response) => {
+authRouter.get('/me', async (req: Request, res: Response) => {
+  const cookies = req.headers.cookie;
+  const token = extractAccessToken(cookies, 'FLYAccessToken');
+  console.log(token);
   try {
-    const bearerHeader = req.headers['authorization'];
-
-    if (typeof bearerHeader != 'undefined') {
+    if (token) {
       // Split the header to get the token part
-      const bearer = bearerHeader?.split(' ');
-      const token = bearer[1];
 
       // Verify token
       const tokenInfo = jwt.verify(token, process.env.TOKEN_SECRET!, async (err, decoded) => {
         if (err) {
           return res.status(403).json({ error: 'Failed to authenticate token.' });
         } else {
-          const user = decoded && await prisma.user.findFirst({
-            where: {
-              // id: decoded?.id
-            }
-          }) || null;
-
+          const user: any = decoded;
           return res.status(200).json({
-            id: user?.id,
+            id: user.id,
             email: user?.email,
-            name: user?.name,
-            role: user?.role
+            role: user?.role,
+            name: user?.name
           });
         }
       });
     }
   } catch (error) {
-    return res.status(500).json( error || 'Eroare pe server.');
+    return res.status(500).json(error || 'Eroare pe server.');
   }
 });
 
-authRouter.post('/signup', async (req:Request, res:Response) => {
-  console.log("req.cookies",req.headers)
-  const { password, email ,name} = req.body;
+authRouter.post('/signup', async (req: Request, res: Response) => {
+  console.log('req.cookies', req.headers);
+  const { password, email, name } = req.body;
 
   try {
     const emailCheck = await prisma.user.findFirst({
@@ -54,8 +48,7 @@ authRouter.post('/signup', async (req:Request, res:Response) => {
       }
     });
     if (emailCheck) {
-
-      return res.status(401).send({error:'Email already exists'});
+      return res.status(401).send({ error: 'Email already exists' });
     } else {
       const hashedPassword = await bcrypt.hash(password, 10);
       const user = await prisma.user.create({
@@ -65,7 +58,7 @@ authRouter.post('/signup', async (req:Request, res:Response) => {
           name
         }
       });
-      console.log(user)
+      console.log(user);
       return res.status(200).json(user);
     }
   } catch (error) {
@@ -73,7 +66,7 @@ authRouter.post('/signup', async (req:Request, res:Response) => {
   }
 });
 
-authRouter.post('/signin', async (req:Request, res:Response) => {
+authRouter.post('/signin', async (req: Request, res: Response) => {
   const { password, email } = req.body;
 
   try {
@@ -82,6 +75,7 @@ authRouter.post('/signin', async (req:Request, res:Response) => {
         email: email
       }
     });
+    console.log(user);
     if (!user) {
       return res.status(401).json({ error: 'Email or password incorrect' });
     }
@@ -92,13 +86,14 @@ authRouter.post('/signin', async (req:Request, res:Response) => {
     const tokenData: User = {
       id: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
+      name:user?.name
     };
     const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
       expiresIn: '1d'
     });
     return res.status(200).json({ token: token, user: user });
   } catch (error) {
-    return res.status(500).json( error || 'Eroare pe server');
+    return res.status(500).json(error || 'Eroare pe server');
   }
 });
