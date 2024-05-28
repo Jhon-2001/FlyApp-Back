@@ -18,8 +18,20 @@ flyghtRouter.post('/', async (req: Request, res: Response) => {
 // READ all flights
 flyghtRouter.get('/', async (req: Request, res: Response) => {
   try {
-    const flights = await prisma.flight.findMany();
-    res.json(flights);
+    const flights = await prisma.flight.findMany({
+      include: {
+        locationStartFlight: true, // Fetch all fields for the start location
+        locationEndFlight: true // Fetch all fields for the end location
+      }
+    });
+
+    const formattedFlights = flights.map(flight => ({
+      ...flight,
+      startLocation: flight.locationStartFlight,
+      endLocation: flight.locationEndFlight
+    }));
+
+    res.json(formattedFlights);
   } catch (error) {
     console.error('Error fetching flights:', error);
     res.status(500).json({ error: 'Internal server error' });
