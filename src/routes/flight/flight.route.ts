@@ -25,8 +25,62 @@ flyghtRouter.get('/', async (req: Request, res: Response) => {
       }
     });
 
-    const formattedFlights = flights.map(flight => ({
+    const formattedFlights = flights.map((flight) => ({
       ...flight,
+      startLocation: flight.locationStartFlight,
+      endLocation: flight.locationEndFlight
+    }));
+
+    res.json(formattedFlights);
+  } catch (error) {
+    console.error('Error fetching flights:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
+  try {
+    const { from, to, depart, number, class: flightClass, return: returnDate } = req.body;
+
+    console.log(depart);
+    const departDate = new Date(depart);
+    const nextDay = new Date(departDate);
+    nextDay.setDate(departDate.getDate() + 1);
+    const backDay = new Date(departDate) 
+    backDay.setDate(departDate.getDate() - 1);
+    
+    console.log(nextDay,backDay)
+    const flights = await prisma.flight.findMany({
+      
+      where: {
+        
+        locationStartFlight: {
+          city: {
+            contains: from.toLowerCase(),
+            mode: 'insensitive',
+          }
+        },
+        locationEndFlight: {
+          city: {
+            contains: to.toLowerCase(),
+            mode: 'insensitive',
+          }
+        },
+        startDate: {
+          gte: depart,
+          // lte: nextDay
+        }
+      },
+      include: {
+        locationStartFlight: true,
+        locationEndFlight: true
+      }
+    });
+
+   console.log(flights)
+    const formattedFlights = flights.map((flight) => ({
+      ...flight,
+      flightClass:flightClass,
       startLocation: flight.locationStartFlight,
       endLocation: flight.locationEndFlight
     }));

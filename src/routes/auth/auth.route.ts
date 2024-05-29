@@ -12,7 +12,6 @@ export const authRouter = express.Router();
 authRouter.get('/me', async (req: Request, res: Response) => {
   const cookies = req.headers.cookie;
   const token = extractAccessToken(cookies, 'FLYAccessToken');
-  console.log(token);
   try {
     if (token) {
       // Split the header to get the token part
@@ -38,7 +37,6 @@ authRouter.get('/me', async (req: Request, res: Response) => {
 });
 
 authRouter.post('/signup', async (req: Request, res: Response) => {
-  console.log('req.cookies', req.headers);
   const { password, email, name } = req.body;
 
   try {
@@ -58,7 +56,6 @@ authRouter.post('/signup', async (req: Request, res: Response) => {
           name
         }
       });
-      console.log(user);
       return res.status(200).json(user);
     }
   } catch (error) {
@@ -75,7 +72,6 @@ authRouter.post('/signin', async (req: Request, res: Response) => {
         email: email
       }
     });
-    console.log(user);
     if (!user) {
       return res.status(401).json({ error: 'Email or password incorrect' });
     }
