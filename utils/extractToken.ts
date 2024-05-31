@@ -5,7 +5,7 @@ export function extractAccessToken(cookieString:any,key:string) {
     const cookies = cookieString?.split('; ');
   
     // Iterate over each cookie to find the FLYAccessToken
-    cookies.forEach((cookie: { split: (arg0: string) => [any, any]; }) => {
+    cookies?.forEach((cookie: { split: (arg0: string) => [any, any]; }) => {
       // Split each cookie by '=' to separate cookie name and value
       const [name, value] = cookie?.split('=');
   
@@ -15,5 +15,5 @@ export function extractAccessToken(cookieString:any,key:string) {
       }
     });
   
-    return accessToken;
+    return accessToken || '';
   }
