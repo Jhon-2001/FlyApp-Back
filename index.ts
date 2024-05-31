@@ -6,6 +6,7 @@ import { authRouter } from './src/routes/auth/auth.route';
 import { flyghtRouter } from './src/routes/flight/flight.route';
 import { locationRouter } from './src/routes/location/location.route';
 import { accomodationRouter } from './src/routes/accomodation/accomodation.route';
+import { usersRouter } from './src/routes/users/users.route';
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ app.use('/auth', authRouter);
 app.use('/flight', flyghtRouter);
 app.use('/location', locationRouter);
 app.use('/accomodation', accomodationRouter);
-
+app.use('/users',usersRouter)
 
 // @@@ROUTES@@@
 
