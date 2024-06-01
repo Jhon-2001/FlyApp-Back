@@ -39,6 +39,7 @@ flyghtRouter.get('/', async (req: Request, res: Response) => {
 });
 
 flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
+  console.log(req.body)
   try {
     const { from, to, depart, number, class: flightClass, return: returnDate } = req.body;
 
