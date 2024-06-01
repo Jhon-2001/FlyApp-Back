@@ -31,7 +31,8 @@ app.use('/auth', authRouter);
 app.use('/flight', flyghtRouter);
 app.use('/location', locationRouter);
 app.use('/accomodation', accomodationRouter);
-app.use('/users',usersRouter)
+app.use('/users', usersRouter);
+
 
 // @@@ROUTES@@@
 
