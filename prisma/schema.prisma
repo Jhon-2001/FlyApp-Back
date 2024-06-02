@@ -8,10 +8,11 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String?
-  email    String
-  password String
+  id            Int                @id @default(autoincrement())
+  name          String?
+  email         String
+  password      String
+  bookedFlights UserBookedFlight[]
 
   role UserRole @default(USER)
 
@@ -23,13 +24,18 @@ model User {
 model UserAccomodationFlight {
   id Int @id @default(autoincrement())
 
-  Flight       Flight        @relation(fields: [flightId], references: [id])
-  Accomodation Accommodation @relation(fields: [accommodationId], references: [id])
-  User         User          @relation(fields: [userId], references: [id])
+  Flight       Flight?        @relation(fields: [flightId], references: [id])
+  Accomodation Accommodation? @relation(fields: [accommodationId], references: [id])
+  User         User           @relation(fields: [userId], references: [id])
 
   userId          Int
-  flightId        Int
-  accommodationId Int
+  flightId        Int?
+  accommodationId Int?
+
+  numberOfPeople Int?
+  amount         Int?
+  checkIn        DateTime?
+  checkOut       DateTime?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
@@ -46,21 +52,40 @@ model Accommodation {
   rooms      Int?
   surface    Int?
   price      Int?
-
-  photos String[]
+  descriere  String?
+  takenDates Json?
+  photos     String[]
 
   location   LocationPoint @relation(fields: [locationId], references: [id])
   locationId Int           @unique
 
   accomodationFlights UserAccomodationFlight[]
+  bookedFlights       UserBookedFlight[]
   createdAt           DateTime                 @default(now())
   updatedAt           DateTime?                @updatedAt
 }
 
+model UserBookedFlight {
+  id              Int   @id @default(autoincrement())
+  userId          Int
+  flightId        Int?
+  accommodationId Int?
+  numberOfPeople  Int
+  amount          Float
+
+  user          User           @relation(fields: [userId], references: [id])
+  flight        Flight?        @relation(fields: [flightId], references: [id])
+  accommodation Accommodation? @relation(fields: [accommodationId], references: [id])
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
 model Flight {
-  id                  Int           @id @default(autoincrement())
-  locationStartFlight LocationPoint @relation("startFlightLocation", fields: [startLocationId], references: [id])
-  locationEndFlight   LocationPoint @relation("endFlightLocation", fields: [endLocationId], references: [id])
+  id                  Int                @id @default(autoincrement())
+  locationStartFlight LocationPoint      @relation("startFlightLocation", fields: [startLocationId], references: [id])
+  locationEndFlight   LocationPoint      @relation("endFlightLocation", fields: [endLocationId], references: [id])
+  bookedFlights       UserBookedFlight[]
 
   startLocationId Int @unique
   endLocationId   Int @unique

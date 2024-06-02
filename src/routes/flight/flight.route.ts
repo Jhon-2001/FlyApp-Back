@@ -37,9 +37,36 @@ flyghtRouter.get('/', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+flyghtRouter.get('/admin', async (req: Request, res: Response) => {
+  try {
+    const flights = await prisma.flight.findMany({
+      include: {
+        locationStartFlight: true, // Fetch all fields for the start location
+        locationEndFlight: true // Fetch all fields for the end location
+      }
+    });
+
+    const formattedFlights = flights.map((flight) => ({
+      ...flight,
+      startLocation: flight.locationStartFlight,
+      endLocation: flight.locationEndFlight
+    }));
+    const accommodation = await prisma.accommodation.findMany({
+      include: { location: true }
+    });
+
+    const books = await prisma.userAccomodationFlight.findMany({
+      include: { Flight: true, Accomodation: true }
+    });
+    res.json({ formattedFlights, accommodation ,books});
+  } catch (error) {
+    console.error('Error fetching flights:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
-  console.log(req.body)
+  console.log(req.body);
   try {
     const { from, to, depart, number, class: flightClass, return: returnDate } = req.body;
 
@@ -47,28 +74,26 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
     const departDate = new Date(depart);
     const nextDay = new Date(departDate);
     nextDay.setDate(departDate.getDate() + 1);
-    const backDay = new Date(departDate) 
+    const backDay = new Date(departDate);
     backDay.setDate(departDate.getDate() - 1);
-    
-    console.log(nextDay,backDay)
+
+    console.log(nextDay, backDay);
     const flights = await prisma.flight.findMany({
-      
       where: {
-        
         locationStartFlight: {
           city: {
             contains: from.toLowerCase(),
-            mode: 'insensitive',
+            mode: 'insensitive'
           }
         },
         locationEndFlight: {
           city: {
             contains: to.toLowerCase(),
-            mode: 'insensitive',
+            mode: 'insensitive'
           }
         },
         startDate: {
-          gte: depart,
+          gte: depart
           // lte: nextDay
         }
       },
@@ -78,10 +103,10 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
       }
     });
 
-   console.log(flights)
+    console.log(flights);
     const formattedFlights = flights.map((flight) => ({
       ...flight,
-      flightClass:flightClass,
+      flightClass: flightClass,
       startLocation: flight.locationStartFlight,
       endLocation: flight.locationEndFlight
     }));

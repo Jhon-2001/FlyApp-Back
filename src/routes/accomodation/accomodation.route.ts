@@ -16,6 +16,7 @@ accomodationRouter.post('/', async (req, res, next) => {
       rooms,
       surface,
       price,
+      descriere,
       photos,
       locationId
     } = req.body;
@@ -30,12 +31,14 @@ accomodationRouter.post('/', async (req, res, next) => {
         surface,
         price,
         photos,
-        locationId
+        locationId,
+        descriere,
+        takenDates: {}
       }
     });
     res.json(newAccommodation);
   } catch (error) {
-    res.status(500).json(error)
+    res.status(500).json(error);
   }
 });
 
@@ -56,7 +59,37 @@ accomodationRouter.get('/:id', async (req, res, next) => {
 accomodationRouter.get('/', async (req, res, next) => {
   try {
     const accommodation = await prisma.accommodation.findMany({
-    
+      include: { location: true }
+    });
+    res.json(accommodation);
+  } catch (error) {
+    next(error);
+  }
+});
+accomodationRouter.post('/disponible', async (req, res, next) => {
+  const data = req.body;
+  console.log(req.body);
+  try {
+    const accommodation = await prisma.accommodation.findMany({
+      include: { location: true },
+      where: {
+        OR: [
+          {
+            location: {
+              city: {
+                contains: data.city.toLowerCase(),
+                mode: 'insensitive'
+              }
+            }
+          },
+          {
+            name: {
+              contains: data.city.toLowerCase(),
+              mode: 'insensitive'
+            }
+          }
+        ]
+      }
     });
     res.json(accommodation);
   } catch (error) {
