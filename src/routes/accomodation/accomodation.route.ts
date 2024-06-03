@@ -68,7 +68,6 @@ accomodationRouter.get('/', async (req, res, next) => {
 });
 accomodationRouter.post('/disponible', async (req, res, next) => {
   const data = req.body;
-  console.log(req.body);
   try {
     const accommodation = await prisma.accommodation.findMany({
       include: { location: true },

@@ -16,6 +16,31 @@ userAcomodationFlights.post('/', async (req: Request, res: Response, next: NextF
         amount
       }
     });
+    if (flightId) {
+      // Update the number of people in the flight
+      await prisma.flight.update({
+        where: { id: flightId },
+        data: {
+          numberOfPeople: {
+            increment: numberOfPeople,
+          },
+        },
+      });
+    }
+
+    // Check if it's an accommodation booking
+    // if (accommodationId) {
+    //   // Update the number of people in the accommodation
+    //   await prisma.accommodation.update({
+    //     where: { id: accommodationId },
+    //     data: {
+    //       numberOfPeople: {
+    //         increment: numberOfPeople,
+    //       },
+    //     },
+    //   });
+    // }
+
     res.status(201).json(newBookedFlight);
   } catch (error) {
     next(error);
@@ -36,7 +61,6 @@ userAcomodationFlights.get('/', async (req: Request, res: Response, next: NextFu
 userAcomodationFlights.get('/user/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    console.log('id', id);
     const bookedFlights = await prisma.userAccomodationFlight.findMany({
       where: { userId: Number(id) },
       include: {
@@ -44,6 +68,12 @@ userAcomodationFlights.get('/user/:id', async (req: Request, res: Response, next
           include: {
             locationStartFlight: true,
             locationEndFlight: true
+          }
+        },
+        Accomodation: {
+          include: {
+            location: true,
+            
           }
         }
       }
