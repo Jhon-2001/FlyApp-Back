@@ -109,7 +109,7 @@ accomodationRouter.patch('/:id', async (req, res, next) => {
     const { id } = req.params;
     const {
       name,
-      description,
+      descriere,
       facilities,
       rating,
       stars,
@@ -125,7 +125,7 @@ accomodationRouter.patch('/:id', async (req, res, next) => {
       },
       data: {
         name,
-        description,
+        descriere,
         facilities,
         rating,
         stars,
