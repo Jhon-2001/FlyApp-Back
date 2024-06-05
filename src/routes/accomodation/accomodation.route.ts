@@ -18,7 +18,8 @@ accomodationRouter.post('/', async (req, res, next) => {
       price,
       descriere,
       photos,
-      locationId
+      locationId,
+     
     } = req.body;
     const newAccommodation = await prisma.accommodation.create({
       data: {
@@ -33,7 +34,8 @@ accomodationRouter.post('/', async (req, res, next) => {
         photos,
         locationId,
         descriere,
-        takenDates: {}
+        takenDates: {},
+     
       }
     });
     res.json(newAccommodation);
@@ -68,6 +70,7 @@ accomodationRouter.get('/', async (req, res, next) => {
 });
 accomodationRouter.post('/disponible', async (req, res, next) => {
   const data = req.body;
+  console.log(data);
   try {
     const accommodation = await prisma.accommodation.findMany({
       include: { location: true },
@@ -87,7 +90,10 @@ accomodationRouter.post('/disponible', async (req, res, next) => {
               mode: 'insensitive'
             }
           }
-        ]
+        ],
+        stars: {
+          gte:+data.stars
+        }
       }
     });
     res.json(accommodation);

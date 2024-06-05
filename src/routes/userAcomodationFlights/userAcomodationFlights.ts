@@ -6,14 +6,17 @@ export const userAcomodationFlights = express.Router();
 // Create a new booked flight
 userAcomodationFlights.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId, flightId, accommodationId, numberOfPeople, amount } = req.body;
+    const { userId, flightId, accommodationId, numberOfPeople, amount, checkIn, checkOut } =
+      req.body;
     const newBookedFlight = await prisma.userAccomodationFlight.create({
       data: {
         userId,
         flightId,
         accommodationId,
         numberOfPeople,
-        amount
+        amount,
+        checkIn,
+        checkOut
       }
     });
     if (flightId) {
@@ -22,9 +25,9 @@ userAcomodationFlights.post('/', async (req: Request, res: Response, next: NextF
         where: { id: flightId },
         data: {
           numberOfPeople: {
-            increment: numberOfPeople,
-          },
-        },
+            increment: numberOfPeople
+          }
+        }
       });
     }
 
@@ -72,8 +75,7 @@ userAcomodationFlights.get('/user/:id', async (req: Request, res: Response, next
         },
         Accomodation: {
           include: {
-            location: true,
-            
+            location: true
           }
         }
       }

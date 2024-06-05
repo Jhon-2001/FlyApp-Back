@@ -68,23 +68,24 @@ flyghtRouter.get('/admin', async (req: Request, res: Response) => {
 flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
   try {
     const { from, to, depart, number, class: flightClass, return: returnDate } = req.body;
-
+    console.log(number)
     const departDate = new Date(depart);
     const nextDay = new Date(departDate);
     nextDay.setDate(departDate.getDate() + 2);
     const backDay = new Date(departDate);
     backDay.setDate(departDate.getDate() - 2);
 
+    console.log("returnDate",returnDate)
+
     const returnDateObject = returnDate ? new Date(returnDate) : null;
     let nextDayReturn, previousDayReturn;
     if (returnDateObject) {
       nextDayReturn = new Date(returnDateObject);
-      nextDayReturn.setDate(returnDateObject.getDate() + 1);
+      nextDayReturn.setDate(returnDateObject.getDate() + 3);
       previousDayReturn = new Date(returnDateObject);
       previousDayReturn.setDate(returnDateObject.getDate() - 1);
     }
-    console.log(nextDay, '<>', backDay);
-    console.log(from, to, depart)
+    console.log(previousDayReturn, '<>', nextDayReturn);
     const filters: any = {
       locationStartFlight: {
         city: {
@@ -101,6 +102,9 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
       startDate: {
         gte: backDay,
         lte: nextDay
+      },
+      numberOfPeople:{
+        gte:number
       }
     };
 
@@ -117,12 +121,14 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
           mode: 'insensitive'
         }
       },
-      startDate: {
+      endDate: {
         gte: previousDayReturn,
         lte: nextDayReturn
+      },
+      numberOfPeople:{
+        gte:number
       }
     };
-
     const flights = await prisma.flight.findMany({
       where: filters,
       include: {
@@ -144,7 +150,7 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
         }
       } || []
     );
-    // console.log('flights2', flights2);
+    console.log('flights2', flights2);
 
     const formattedFlights = flights.map((flight) => ({
       ...flight,
