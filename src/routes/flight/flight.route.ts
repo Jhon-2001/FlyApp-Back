@@ -68,14 +68,14 @@ flyghtRouter.get('/admin', async (req: Request, res: Response) => {
 flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
   try {
     const { from, to, depart, number, class: flightClass, return: returnDate } = req.body;
-    console.log(number)
+    console.log(number);
     const departDate = new Date(depart);
     const nextDay = new Date(departDate);
     nextDay.setDate(departDate.getDate() + 2);
     const backDay = new Date(departDate);
     backDay.setDate(departDate.getDate() - 2);
 
-    console.log("returnDate",returnDate)
+    console.log('returnDate', returnDate);
 
     const returnDateObject = returnDate ? new Date(returnDate) : null;
     let nextDayReturn, previousDayReturn;
@@ -103,8 +103,8 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
         gte: backDay,
         lte: nextDay
       },
-      numberOfPeople:{
-        gte:number
+      numberOfPeople: {
+        gte: number
       }
     };
 
@@ -125,8 +125,8 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
         gte: previousDayReturn,
         lte: nextDayReturn
       },
-      numberOfPeople:{
-        gte:number
+      numberOfPeople: {
+        gte: number
       }
     };
     const flights = await prisma.flight.findMany({
@@ -179,11 +179,22 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
 flyghtRouter.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const flight = await prisma.flight.findUnique({ where: { id: parseInt(id) } });
+    const flight = await prisma.flight.findUnique({
+      where: { id: parseInt(id) },
+      include: {
+        locationStartFlight: true,
+        locationEndFlight: true
+      }
+    });
+    const formattedFlights = {
+      ...flight,
+      startLocation: flight?.locationStartFlight,
+      endLocation: flight?.locationEndFlight
+    };
     if (!flight) {
       return res.status(404).json({ error: 'Flight not found' });
     }
-    res.json(flight);
+    res.json(formattedFlights);
   } catch (error) {
     console.error('Error fetching flight:', error);
     res.status(500).json({ error: 'Internal server error' });

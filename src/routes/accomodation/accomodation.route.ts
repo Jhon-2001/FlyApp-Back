@@ -18,8 +18,7 @@ accomodationRouter.post('/', async (req, res, next) => {
       price,
       descriere,
       photos,
-      locationId,
-     
+      locationId
     } = req.body;
     const newAccommodation = await prisma.accommodation.create({
       data: {
@@ -34,8 +33,7 @@ accomodationRouter.post('/', async (req, res, next) => {
         photos,
         locationId,
         descriere,
-        takenDates: {},
-     
+        takenDates: {}
       }
     });
     res.json(newAccommodation);
@@ -51,6 +49,9 @@ accomodationRouter.get('/:id', async (req, res, next) => {
     const accommodation = await prisma.accommodation.findUnique({
       where: {
         id: parseInt(id)
+      },
+      include: {
+        location: true
       }
     });
     res.json(accommodation);
@@ -92,7 +93,7 @@ accomodationRouter.post('/disponible', async (req, res, next) => {
           }
         ],
         stars: {
-          gte:+data.stars
+          gte: +data.stars
         }
       }
     });
@@ -103,7 +104,7 @@ accomodationRouter.post('/disponible', async (req, res, next) => {
 });
 
 // Update Accommodation
-accomodationRouter.put('/:id', async (req, res, next) => {
+accomodationRouter.patch('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
     const {
