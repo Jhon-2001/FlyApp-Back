@@ -167,8 +167,16 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
     const allFormattedFlights = returnDate
       ? [...formattedFlights, ...formattedFlights2]
       : formattedFlights;
+      const removeDuplicatesById = (allFormattedFlights:any) => {
+        const uniqueFlights = allFormattedFlights.reduce((acc:any, current:any) => {
+          acc[current.id] = current;
+          return acc;
+        }, {});
+        return Object.values(uniqueFlights);
+      };
+      const uniqueFlights = removeDuplicatesById(allFormattedFlights);
 
-    res.json(allFormattedFlights);
+    res.json(uniqueFlights);
   } catch (error) {
     console.error('Error fetching flights:', error);
     res.status(500).json({ error: 'Internal server error' });
