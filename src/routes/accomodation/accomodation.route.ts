@@ -5,6 +5,7 @@ import e from 'express';
 export const accomodationRouter = express.Router();
 
 // Create Accommodation
+// Endpoint pentru crearea unei noi intrări de cazare în baza de date
 accomodationRouter.post('/', async (req, res, next) => {
   try {
     const {
@@ -20,6 +21,8 @@ accomodationRouter.post('/', async (req, res, next) => {
       photos,
       locationId
     } = req.body;
+
+    // Crearea unei noi intrări de cazare folosind Prisma
     const newAccommodation = await prisma.accommodation.create({
       data: {
         name,
@@ -33,9 +36,11 @@ accomodationRouter.post('/', async (req, res, next) => {
         photos,
         locationId,
         descriere,
-        takenDates: {}
+        takenDates: {} // Inițializarea takenDates ca un obiect gol
       }
     });
+
+    // Trimiterea cazării create ca răspuns
     res.json(newAccommodation);
   } catch (error) {
     res.status(500).json(error);
@@ -43,9 +48,11 @@ accomodationRouter.post('/', async (req, res, next) => {
 });
 
 // Read Accommodation
+// Endpoint pentru obținerea unei cazări specifice după ID
 accomodationRouter.get('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
+      // Obținerea cazării după ID folosind Prisma
     const accommodation = await prisma.accommodation.findUnique({
       where: {
         id: parseInt(id)
@@ -59,6 +66,7 @@ accomodationRouter.get('/:id', async (req, res, next) => {
     next(error);
   }
 });
+// Endpoint pentru obținerea tuturor cazărilor
 accomodationRouter.get('/', async (req, res, next) => {
   try {
     const accommodation = await prisma.accommodation.findMany({
@@ -69,6 +77,7 @@ accomodationRouter.get('/', async (req, res, next) => {
     next(error);
   }
 });
+// Endpoint pentru găsirea cazărilor disponibile pe baza criteriilor
 accomodationRouter.post('/disponible', async (req, res, next) => {
   const data = req.body;
   console.log(data);
@@ -104,6 +113,7 @@ accomodationRouter.post('/disponible', async (req, res, next) => {
 });
 
 // Update Accommodation
+// Endpoint pentru actualizarea unei cazări existente după ID
 accomodationRouter.patch('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -143,6 +153,7 @@ accomodationRouter.patch('/:id', async (req, res, next) => {
 });
 
 // Delete Accommodation
+// Endpoint pentru ștergerea unei cazări după ID
 accomodationRouter.delete('/:id', async (req, res, next) => {
   try {
     const { id } = req.params;

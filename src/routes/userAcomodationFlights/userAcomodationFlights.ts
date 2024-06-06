@@ -82,7 +82,7 @@ userAcomodationFlights.get('/user/:id', async (req: Request, res: Response, next
     });
 
     if (bookedFlights.length === 0) {
-      return res.status(404).json({ error: 'No booked flights found for this user' });
+      return res.status(404).json({ error: 'Nu exista cazari sau zboruri pentru acest user' });
     }
     res.status(200).json(bookedFlights);
   } catch (error) {

@@ -3,6 +3,7 @@ import prisma from '../../../prisma/prisma-client';
 
 export const flyghtRouter = express.Router();
 
+// Endpoint pentru crearea unui zbor nou
 flyghtRouter.post('/', async (req: Request, res: Response) => {
   try {
     const flightData = req.body;
@@ -14,7 +15,7 @@ flyghtRouter.post('/', async (req: Request, res: Response) => {
   }
 });
 
-// READ all flights
+// Endpoint pentru obținerea tuturor zborurilor
 flyghtRouter.get('/', async (req: Request, res: Response) => {
   try {
     const flights = await prisma.flight.findMany({
@@ -23,7 +24,7 @@ flyghtRouter.get('/', async (req: Request, res: Response) => {
         locationEndFlight: true
       }
     });
-
+ // Formaterea zborurilor pentru răspunsul API
     const formattedFlights = flights.map((flight) => ({
       ...flight,
       startLocation: flight.locationStartFlight,
@@ -36,7 +37,7 @@ flyghtRouter.get('/', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+// Endpoint pentru obținerea zborurilor și cazărilor pentru administrare
 flyghtRouter.get('/admin', async (req: Request, res: Response) => {
   try {
     const flights = await prisma.flight.findMany({
@@ -65,6 +66,7 @@ flyghtRouter.get('/admin', async (req: Request, res: Response) => {
   }
 });
 
+// Endpoint pentru găsirea zborurilor disponibile
 flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
   try {
     const { from, to, depart, number, class: flightClass, return: returnDate } = req.body;
@@ -107,7 +109,7 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
         gte: number
       }
     };
-
+  console.log(previousDayReturn,nextDayReturn)
     const filtersReturn: any = {
       locationStartFlight: {
         city: {
@@ -183,7 +185,7 @@ flyghtRouter.post('/disponible', async (req: Request, res: Response) => {
   }
 });
 
-// READ a single flight by ID
+// Endpoint pentru obținerea unui zbor după ID
 flyghtRouter.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

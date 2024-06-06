@@ -9,6 +9,7 @@ dotenv.config();
 
 export const authRouter = express.Router();
 
+// Endpoint pentru obținerea informațiilor utilizatorului curent
 authRouter.get('/me', async (req: Request, res: Response) => {
   const cookies = req.headers.cookie;
   const token = extractAccessToken(cookies, 'FLYAccessToken');
@@ -35,7 +36,7 @@ authRouter.get('/me', async (req: Request, res: Response) => {
     return res.status(500).json(error || 'Eroare pe server.');
   }
 });
-
+// Endpoint pentru înregistrarea unui nou utilizator
 authRouter.post('/signup', async (req: Request, res: Response) => {
   const { password, email, name } = req.body;
 
@@ -62,7 +63,7 @@ authRouter.post('/signup', async (req: Request, res: Response) => {
     return res.status(500).json(error);
   }
 });
-
+// Endpoint pentru autentificarea utilizatorului
 authRouter.post('/signin', async (req: Request, res: Response) => {
   const { password, email } = req.body;
 
@@ -75,6 +76,7 @@ authRouter.post('/signin', async (req: Request, res: Response) => {
     if (!user) {
       return res.status(401).json({ error: 'Email or password incorrect' });
     }
+      // Compararea parolei hash-uite
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(401).json({ error: 'Email or password incorrect' });
