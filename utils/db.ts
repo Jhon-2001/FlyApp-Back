@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 let isDbConnected = false;
 
 
-
+// Funcție pentru verificarea conexiunii la baza de date
 export default function checkDbConnection() {
     if (!isDbConnected) {
       prisma.$connect()
